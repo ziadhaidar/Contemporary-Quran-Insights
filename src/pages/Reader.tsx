@@ -1,7 +1,7 @@
 // src/pages/Reader.tsx
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { fetchQuran, Chapter } from '../services/tanzil';
+import { fetchQuran, Chapter, VerseObj } from '../services/tanzil';
 
 export function Reader() {
   const { surahId, ayahId } = useParams<{ surahId?: string; ayahId?: string }>();
@@ -10,9 +10,7 @@ export function Reader() {
   const [current, setCurrent] = useState({ chapter: 1, aya: 1 });
 
   useEffect(() => {
-    fetchQuran()
-      .then(setQuran)
-      .catch(console.error);
+    fetchQuran().then(setQuran).catch(console.error);
   }, []);
 
   useEffect(() => {
@@ -27,35 +25,37 @@ export function Reader() {
     return <div className="flex items-center justify-center h-screen text-xl">جاري التحميل…</div>;
   }
 
-  // Safe index lookup for chapter
-  const chapterIndex = Math.max(0, Math.min(quran.length - 1, current.chapter - 1));
-  const chapterData = quran[chapterIndex];
+  // Safe lookup
+  const chapIdx = Math.max(0, Math.min(quran.length - 1, current.chapter - 1));
+  const chapterData = quran[chapIdx];
   if (!chapterData) {
-    return <div className="p-6 text-center">الصفحة غير موجودة (سورة غير صالحة)</div>;
+    return <div className="p-6 text-center">سورة غير موجودة</div>;
   }
 
   const verses = chapterData.verses;
 
   const handleClickAya = (ayaNum: number) => {
-    setCurrent({ chapter: chapterData.number || current.chapter, aya: ayaNum });
-    navigate(`/reader/${chapterData.number || current.chapter}/${ayaNum}`);
+    setCurrent({ chapter: chapterData.number, aya: ayaNum });
+    navigate(`/reader/${chapterData.number}/${ayaNum}`);
   };
 
   return (
     <div className="flex h-screen overflow-hidden">
       {/* Left Pane */}
       <div className="w-2/3 p-6 overflow-y-auto">
-        {verses.map((ayaText, idx) => {
-          const ayaNum = idx + 1;
-          const isSelected = current.chapter === chapterIndex + 1 && current.aya === ayaNum;
+        {verses.map((aya: VerseObj) => {
+          const isSelected =
+            current.chapter === chapterData.number && current.aya === aya.id;
           return (
             <p
-              key={ayaNum}
-              className={`text-2xl mb-6 cursor-pointer ${isSelected ? 'bg-yellow-100 rounded p-2' : ''}`}
-              onClick={() => handleClickAya(ayaNum)}
+              key={aya.id}
+              className={`text-2xl mb-6 cursor-pointer ${
+                isSelected ? 'bg-yellow-100 rounded p-2' : ''
+              }`}
+              onClick={() => handleClickAya(aya.id)}
             >
-              <span className="mr-2 text-gray-500">﴿{ayaNum}﴾</span>
-              <span className="font-mushaf">{ayaText}</span>
+              <span className="mr-2 text-gray-500">﴿{aya.id}﴾</span>
+              <span className="font-mushaf">{aya.text}</span>
             </p>
           );
         })}
@@ -64,7 +64,7 @@ export function Reader() {
       {/* Right Pane: Insight Panel Stub */}
       <div className="w-1/3 border-l p-6 flex flex-col">
         <h2 className="text-2xl mb-4">
-          سُورَة {chapterIndex + 1}، آية {current.aya}
+          سُورَة {chapterData.number}، آية {current.aya}
         </h2>
         <div className="flex-1">
           <p className="mb-4">— ملخص التفسير هنا —</p>
