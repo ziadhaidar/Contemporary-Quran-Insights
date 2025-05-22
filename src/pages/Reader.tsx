@@ -15,7 +15,6 @@ export function Reader() {
       .catch(console.error);
   }, []);
 
-  // Sync URL params → state
   useEffect(() => {
     if (!quran) return;
     setCurrent({
@@ -24,16 +23,22 @@ export function Reader() {
     });
   }, [surahId, ayahId, quran]);
 
-  if (!quran) {
+  if (!quran || quran.length === 0) {
     return <div className="flex items-center justify-center h-screen text-xl">جاري التحميل…</div>;
   }
 
-  const chapterData = quran.find(c => c.number === current.chapter)!;
+  // Safe index lookup for chapter
+  const chapterIndex = Math.max(0, Math.min(quran.length - 1, current.chapter - 1));
+  const chapterData = quran[chapterIndex];
+  if (!chapterData) {
+    return <div className="p-6 text-center">الصفحة غير موجودة (سورة غير صالحة)</div>;
+  }
+
   const verses = chapterData.verses;
 
   const handleClickAya = (ayaNum: number) => {
-    setCurrent({ chapter: chapterData.number, aya: ayaNum });
-    navigate(`/reader/${chapterData.number}/${ayaNum}`);
+    setCurrent({ chapter: chapterData.number || current.chapter, aya: ayaNum });
+    navigate(`/reader/${chapterData.number || current.chapter}/${ayaNum}`);
   };
 
   return (
@@ -42,7 +47,7 @@ export function Reader() {
       <div className="w-2/3 p-6 overflow-y-auto">
         {verses.map((ayaText, idx) => {
           const ayaNum = idx + 1;
-          const isSelected = current.chapter === chapterData.number && current.aya === ayaNum;
+          const isSelected = current.chapter === chapterIndex + 1 && current.aya === ayaNum;
           return (
             <p
               key={ayaNum}
@@ -59,7 +64,7 @@ export function Reader() {
       {/* Right Pane: Insight Panel Stub */}
       <div className="w-1/3 border-l p-6 flex flex-col">
         <h2 className="text-2xl mb-4">
-          سُورَة {chapterData.number}، آية {current.aya}
+          سُورَة {chapterIndex + 1}، آية {current.aya}
         </h2>
         <div className="flex-1">
           <p className="mb-4">— ملخص التفسير هنا —</p>
