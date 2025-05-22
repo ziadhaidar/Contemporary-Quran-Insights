@@ -1,0 +1,102 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@font-face {
+  font-family: 'Amiri';
+  src: url('https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&display=swap');
+  font-display: swap;
+}
+
+:root {
+  --color-primary: 11, 110, 79; /* Emerald green */
+  --color-secondary: 72, 139, 73; /* Medium green */
+  --color-accent: 230, 184, 156; /* Gold */
+  --color-neutral: 248, 245, 240; /* Off-white */
+  --color-dark: 48, 49, 52; /* Dark gray */
+}
+
+@layer base {
+  html {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-neutral-50 text-neutral-900;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-semibold tracking-tight;
+  }
+
+  /* Arabic text styling */
+  .arabic-text {
+    font-family: 'Amiri', serif;
+    direction: rtl;
+    line-height: 2;
+    @apply text-xl md:text-2xl lg:text-3xl;
+  }
+}
+
+@layer components {
+  .btn {
+    @apply px-4 py-2 rounded-md font-medium transition-colors duration-200;
+  }
+
+  .btn-primary {
+    @apply bg-primary-600 text-white hover:bg-primary-700;
+  }
+
+  .btn-secondary {
+    @apply bg-secondary-500 text-white hover:bg-secondary-600;
+  }
+
+  .btn-outline {
+    @apply border border-primary-600 text-primary-600 hover:bg-primary-50;
+  }
+
+  .card {
+    @apply bg-white rounded-lg shadow-md overflow-hidden transition-all duration-300;
+  }
+
+  .insight-card {
+    @apply p-4 border-l-4 border-primary-600 bg-white rounded-r-lg mb-4 shadow-sm;
+  }
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-neutral-100;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-primary-300 rounded-full;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-primary-400;
+}
+
+/* Transitions and animations */
+.fade-in {
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.slide-in {
+  animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+  from { transform: translateX(20px); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
