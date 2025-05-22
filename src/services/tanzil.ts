@@ -1,17 +1,14 @@
 // src/services/tanzil.ts
 export type Chapter = {
-  number: number;    // surah number
-  name: string;      // surah name in Arabic
-  verses: string[];  // Arabic text of each aya
+  number: number;
+  name: string;
+  verses: string[];
 };
 
 export async function fetchQuran(): Promise<Chapter[]> {
   const res = await fetch(
     'https://cdn.jsdelivr.net/npm/quran-json@3.1.2/dist/quran.json'
   );
-  if (!res.ok) {
-    throw new Error('Failed to load Quran Uthmani text from CDN');
-  }
-  // Response is an array: [{ number:1, name:"الفاتحة", verses:[...], ... }, ...]
+  if (!res.ok) throw new Error('Cannot load Quran JSON from CDN');
   return (await res.json()) as Chapter[];
 }
