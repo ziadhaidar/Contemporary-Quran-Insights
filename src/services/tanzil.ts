@@ -1,8 +1,10 @@
 // src/services/tanzil.ts
+export type VerseObj = { id: number; text: string };
+
 export type Chapter = {
-  number: number;
-  name: string;
-  verses: string[];
+  number: number;    // surah number
+  name: string;      // surah name in Arabic
+  verses: VerseObj[]; // now objects, not raw strings
 };
 
 export async function fetchQuran(): Promise<Chapter[]> {
